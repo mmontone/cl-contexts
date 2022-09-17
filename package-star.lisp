@@ -7,7 +7,10 @@
    #:package*
    #:defpackage*
    #:in-package*
-   #:find-package*)
+   #:find-package*
+   #:init-package*-option
+   #:process-in-package*-option
+   #:find-package*-option)
   (:documentation "Extensible package system."))
 
 (in-package :package-star)
@@ -26,7 +29,12 @@
   options)
 
 (defun package*:find-package* (package-name)
-  (gethash package-name package*::*packages*))
+  "Find package named with PACKAGE-NAME."
+  (gethash (string package-name) package*::*packages*))
+
+(defun package*:find-package*-option (package option-name)
+  "Find PACKAGE option named with OPTION-NAME."
+  (find option-name (package*-options package) :key #'car))
 
 (defun collect-cl-defpackage-options (options)
   "Collection OPTIONS used by standard CL:DEFPACKAGE."
@@ -79,4 +87,8 @@ This is evaluated at package definition time."))
 (defmacro package*:in-package* (package-name)
   `(progn
      (cl:in-package ,package-name)
-     (package*::process-in-package* (package*:find-package* ',package-name))))
+     ,@(let ((package* (package*:find-package* package-name)))
+	 (loop for option in (package*::collect-non-cl-defpackage-options
+			      (package*::package*-options package*))
+	     collect (package*:process-in-package*-option package* (car option) option)))))
+       
