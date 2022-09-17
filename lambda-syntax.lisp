@@ -66,10 +66,12 @@ This function can be used directly outside of a read table by passing `recursive
 ;;(with-input-from-string (s "(+ %1 %2)")
 ;;  (lambda-reader s nil nil))
 
+;; (get-dispatch-macro-character #\# #\l)
+
 (cl-syntax:defsyntax implicit-lambda
   (:macro-char #\# :dispatch)
-  (:dispatch-macro-char #\# #\f #'lambda-reader))
+  (:dispatch-macro-char #\# #\l #'lambda-reader))
 
 (cl-syntax:use-syntax implicit-lambda)
 
-;; (mapcar #f(subseq (package-name %) 1) (list-all-packages))
+;; (mapcar #l(subseq (package-name %) 1) (list-all-packages))
