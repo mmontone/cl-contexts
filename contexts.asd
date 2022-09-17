@@ -3,7 +3,7 @@
   :description  "Dependency injection library for Common Lisp"
   :author       "Mariano Montone <marianomontone@gmail.com>"
   :serial       t
-  :license      "GNU GPL, version 3"
+  :license      "MIT"
   :components   ((:file "contexts")
 		 (:file "contexts-modules")
 		 (:file "modules-example"))
