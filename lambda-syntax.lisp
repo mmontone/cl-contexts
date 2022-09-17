@@ -76,4 +76,4 @@ This function can be used directly outside of a read table by passing `recursive
 
 (cl-syntax:use-syntax implicit-lambda)
 
-;; (mapcar #f(subseq (package-name %) 1) (list-all-packages))
+;; (mapcar #l(subseq (package-name %) 1) (list-all-packages))
