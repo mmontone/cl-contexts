@@ -25,6 +25,9 @@
   name
   options)
 
+(defun package*:find-package* (package-name)
+  (gethash package-name package*::*packages*))
+
 (defun collect-cl-defpackage-options (options)
   "Collection OPTIONS used by standard CL:DEFPACKAGE."
   (remove-if-not (alex:compose (alex:rcurry #'member +cl-defpackage-options+)
@@ -51,15 +54,29 @@ Each of OPTIONS has the form (option-name &rest args)."
 	     collect `(init-package*-option package*
 					    ',(car option)
 					    ',option))
-     (setf (gethash ',name *packages*) package*)
+     (setf (gethash ,(symbol-name name) *packages*) package*)
      package*))
 
 (defgeneric init-package*-option (package* option-name option)
-  (:documentation "Initialize PACKAGE* option named with OPTION-NAME."))
+  (:documentation "Initialize PACKAGE* option named with OPTION-NAME.
+This is evaluated at package definition time."))
 
 (defmethod init-package*-option (package* option-name option)
   (error "Uknown package option: ~a" option-name))
 
-(defpackage* my-package
-    (:use :cl)
-  (:foo "lala"))
+(defgeneric process-in-package*-option (package* option-name option)
+  (:documentation "Process PACKAGE* OPTION at IN-PACKAGE* time."))
+
+(defmethod process-in-package*-option (package* option-name option)
+  "Do nothing by default"
+  nil)
+
+(defun process-in-package* (package)
+  "Process options for IN-PACKAGE calls."
+  (dolist (option (collect-non-cl-defpackage-options (package*-options package)))
+    (process-in-package*-option package (first option) option)))
+
+(defmacro package*:in-package* (package-name)
+  `(progn
+     (cl:in-package ,package-name)
+     (package*::process-in-package* (package*:find-package* ',package-name))))
