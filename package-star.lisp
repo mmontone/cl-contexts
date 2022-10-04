@@ -1,3 +1,14 @@
+;; Experimental extensible package system
+;; Packages get a generic syntax (defpackage* clauses), where
+;; each clause can be implemented by independent systems.
+;; Possible use cases:
+;; - Useful 
+;; TODO:
+;; - See if it is possible to adapt UIOP/PACKAGE:DEFPACKAGE (:REEXPORT AND :MIX options)
+;; - Conduits
+;; - Contexts
+;; - Readtables and syntax tables.
+
 (defpackage :package-star
   (:use :cl)
   (:nicknames :package*)
